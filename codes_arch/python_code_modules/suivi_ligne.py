@@ -26,7 +26,7 @@ from picamera import PiCamera
 from picamera.array import PiRGBArray
 
 # return_angle takes an array frame and returns the correction angle
-from line_detection_return_angle import return_angle
+from line_detection import return_angle
 
 emptyException = queue.Empty
 fullException = queue.Full
@@ -312,7 +312,7 @@ def main_suivi_ligne():
     write_i8(serial_file, motor_speed)  # valeur moteur droit
     write_i8(serial_file, motor_speed)  # valeur moteur gauche
 
-    list_angles = []
+    ###list_angles = []
 
     while True:
 
@@ -332,10 +332,12 @@ def main_suivi_ligne():
         print(angle)
         """
         angle, is_intersec = return_angle(frame)
-        #print(angle)
+        print(angle)
         tourner(np.sign(angle)*(abs(angle)*0.237 - 1.33))
         key = cv2.waitKey(1)
         rawcapture.truncate(0)
+        
+        # If press ESC, it stops
         if key == 27:
             write_order(serial_file, Order.STOP)
             break
