@@ -219,6 +219,11 @@ void get_messages_from_serial()
           coder[RIGHT] = 0;
           break; 
         }
+        case OBSTACLE:
+        {
+          write_i16(MeasureDistance());
+          break;
+        }
 
   	// Unknown order
   	default:
