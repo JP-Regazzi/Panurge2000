@@ -11,7 +11,7 @@ def set_graph(n, m=None):
     Vit = np.zeros((n*m, n*m))
     v_max = 7
 
-    for i in range(n*m):
+    for i in range(n*m): # setting the passes randomly
         if i % n != 0:
             t = rd.randint(1, 4)
             Vit[i, i-1] = v_max/t
@@ -63,4 +63,4 @@ def dijkstra(Graph, i, j):
         Chemin.append(j)
         j = parent[j]
 
-    return distance, Chemin
+    return distance, Chemin # return distance and prectition( or the way in this case)
