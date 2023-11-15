@@ -108,8 +108,7 @@ def main():
         if changement:
             point_arr = voiture.noeud_prec
             obstacle([voiture.arete], voiture)
-            camera.capture(rawcapture, use_video_port=True,
-                       resize=(80, 60), format="bgr")
+            camera.capture(rawcapture, use_video_port=True, resize=(80, 60), format="bgr")
             frame = rawcapture.array
             angle_corr,is_inter = return_angle(frame)
             tourner_sur_place(np.sign(angle_corr)*(abs(angle_corr)*0.237037 - 1))

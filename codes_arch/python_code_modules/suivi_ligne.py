@@ -250,15 +250,15 @@ def tourner(angle):
         temp_angle = np.sign(temp_angle)*(abs(temp_angle)*0.237 - 1.33)
                                      
         #if abs(lectureCodeurGauche()) >= abs(2*angle) and angle >0:
-        if 10 > temp_angle >0:
+        if 10 > temp_angle > 0:
             #print(lectureCodeurGauche())
             Flag = True
         #if abs(lectureCodeurDroit()) >= abs(2*angle) and angle <0:
-        if -10 < temp_angle <0:
+        if -10 < temp_angle < 0:
             Flag = True
         if angle == 0:
             Flag = True
-         
+        
     write_order(serial_file, Order.STOP)
     write_order(serial_file, Order.MOTOR)
     write_i8(serial_file, motor_speed)  # valeur moteur droit
