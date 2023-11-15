@@ -1,7 +1,6 @@
 import numpy as np
 import copy
-from dijkstra import dijkstra
-from set_graph import set_graph
+from graph import set_graph, dijkstra
 from raspi_serial import *
 from picamera import PiCamera
 from picamera.array import PiRGBArray
