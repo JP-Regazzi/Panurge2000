@@ -20,6 +20,7 @@ class Order(Enum):
     READENCODERr = 7
     READENCODERl = 8
     RESETENC = 9
+    OBSTACLE = 10
 
 def read_order(f):
     """

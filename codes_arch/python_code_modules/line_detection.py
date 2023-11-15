@@ -4,7 +4,7 @@ import numpy as np
 import time
 import sys
 import os
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 
@@ -149,11 +149,12 @@ def return_angle(frame):
     frame = cv2.resize(frame, (80, 60))
 
     hsv = convert_to_HSV(frame)
-    cv2.imshow('hsv', hsv)
+    #cv2.imshow('hsv', hsv)
     mask = detect_edges(hsv)
-    cv2.imshow('mask', mask)
+    #cv2.imshow('mask', mask)
     cropped_mask = region_of_interest(mask)
-    cv2.imshow('cropped_mask', mask)
+    #cropped_mask = mask
+    #cv2.imshow('cropped_mask', mask)
     #cropped_mask = mask
 
     # Noise reduction
@@ -161,7 +162,7 @@ def return_angle(frame):
     eroded_mask = cv2.erode(cropped_mask, kernel_erode, iterations=1)
     kernel_dilate = np.ones((4,4), np.uint8)
     dilated_mask = cv2.dilate(eroded_mask, kernel_dilate, iterations=1)
-    cv2.imshow('after_noise_reduction', dilated_mask)
+    #cv2.imshow('after_noise_reduction', dilated_mask)
 
     # Steering wheel angle calculation
     line_segments = detect_line_segments(dilated_mask)

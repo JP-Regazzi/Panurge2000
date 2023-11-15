@@ -31,8 +31,7 @@ from line_detection import return_angle
 emptyException = queue.Empty
 fullException = queue.Full
 serial_file = None
-camera = PiCamera()
-motor_speed = 100
+motor_speed = 80 #100
 step_length = 5
 
 
@@ -224,6 +223,7 @@ def process_cmd(cmd):
 
 
 def tourner(angle):
+    print("début tourner")
     write_order(serial_file, Order.RESETENC)
     write_order(serial_file, Order.STOP)
     if angle > 0:
@@ -231,20 +231,34 @@ def tourner(angle):
         write_i8(serial_file, 0)  # valeur moteur droit
         write_i8(serial_file, motor_speed)  # valeur moteur gauche
     else:
+
         write_order(serial_file, Order.MOTOR)
         write_i8(serial_file, motor_speed)  # valeur moteur droit
         write_i8(serial_file, 0)  # valeur moteur gauche
     Flag = False
     
+    
     while not Flag:
-        if abs(lectureCodeurGauche()) >= abs(2*angle) and angle >0:
+        
+        # Get new frame
+        rawcapture.truncate(0)
+        camera.capture(rawcapture, use_video_port=True, resize=(80, 60), format="bgr")
+        frame = rawcapture.array
+        
+        # Recalculate angle
+        temp_angle, temp_intersec = return_angle(frame)
+        temp_angle = np.sign(temp_angle)*(abs(temp_angle)*0.237 - 1.33)
+                                     
+        #if abs(lectureCodeurGauche()) >= abs(2*angle) and angle >0:
+        if 10 > temp_angle > 0:
             #print(lectureCodeurGauche())
             Flag = True
-        if abs(lectureCodeurDroit()) >= abs(2*angle) and angle <0:
+        #if abs(lectureCodeurDroit()) >= abs(2*angle) and angle <0:
+        if -10 < temp_angle < 0:
             Flag = True
         if angle == 0:
             Flag = True
-            
+        
     write_order(serial_file, Order.STOP)
     write_order(serial_file, Order.MOTOR)
     write_i8(serial_file, motor_speed)  # valeur moteur droit
@@ -317,8 +331,7 @@ def main_suivi_ligne():
 
     while True:
 
-        camera.capture(rawcapture, use_video_port=True,
-                       resize=(80, 60), format="bgr")
+        camera.capture(rawcapture, use_video_port=True, resize=(80, 60), format="bgr")
         frame = rawcapture.array
         """
         list_angles.append(return_angle(frame))
@@ -335,7 +348,9 @@ def main_suivi_ligne():
         angle, is_intersec = return_angle(frame)
         print(angle)
         tourner(np.sign(angle)*(abs(angle)*0.237 - 1.33))
+        print("tourner a été passé")
         key = cv2.waitKey(1)
+        print('pass')
         rawcapture.truncate(0)
         
         # If press ESC, it stops
@@ -348,5 +363,5 @@ if __name__ == "__main__":
 
     camera = PiCamera()
     rawcapture = PiRGBArray(camera, size=(80, 60))
-    time.sleep(0.2)
+    time.sleep(0.1)
     main_suivi_ligne()

@@ -225,8 +225,8 @@ def process_cmd(cmd):
     else:
         print("Invalid command")
 
-
 def tourner(angle):
+    print("début tourner")
     write_order(serial_file, Order.RESETENC)
     write_order(serial_file, Order.STOP)
     if angle > 0:
@@ -234,25 +234,40 @@ def tourner(angle):
         write_i8(serial_file, 0)  # valeur moteur droit
         write_i8(serial_file, motor_speed)  # valeur moteur gauche
     else:
+
         write_order(serial_file, Order.MOTOR)
         write_i8(serial_file, motor_speed)  # valeur moteur droit
         write_i8(serial_file, 0)  # valeur moteur gauche
     Flag = False
     
+    
     while not Flag:
-        if abs(lectureCodeurGauche()) >= abs(2*angle) and angle >0:
+        
+        # Get new frame
+        rawcapture.truncate(0)
+        camera.capture(rawcapture, use_video_port=True, resize=(80, 60), format="bgr")
+        frame = rawcapture.array
+        
+        # Recalculate angle
+        temp_angle, temp_intersec = return_angle(frame)
+        temp_angle = np.sign(temp_angle)*(abs(temp_angle)*0.237 - 1.33)
+                                     
+        #if abs(lectureCodeurGauche()) >= abs(2*angle) and angle >0:
+        if 10 > temp_angle > 0:
             #print(lectureCodeurGauche())
             Flag = True
-        if abs(lectureCodeurDroit()) >= abs(2*angle) and angle <0:
+        #if abs(lectureCodeurDroit()) >= abs(2*angle) and angle <0:
+        if -10 < temp_angle < 0:
             Flag = True
         if angle == 0:
             Flag = True
-            
+        
     write_order(serial_file, Order.STOP)
     write_order(serial_file, Order.MOTOR)
     write_i8(serial_file, motor_speed)  # valeur moteur droit
     write_i8(serial_file, motor_speed)  # valeur moteur gauche
-    
+
+
 def tourner_sur_place(angle):
     write_order(serial_file, Order.RESETENC)
     write_order(serial_file, Order.STOP)
@@ -268,14 +283,15 @@ def tourner_sur_place(angle):
     
     while not Flag:
         if abs(lectureCodeurGauche()) >= abs(angle) and abs(lectureCodeurDroit()) >= abs(angle):
-            #print(lectureCodeurGauche())
+            print('lecture gauche: ', lectureCodeurGauche())
+            print('lecture droit: ', lectureCodeurDroit())
+            print('angle: ' {angle})
             Flag = True
             
     write_order(serial_file, Order.STOP)
     write_order(serial_file, Order.MOTOR)
     write_i8(serial_file, motor_speed)  # valeur moteur droit
     write_i8(serial_file, motor_speed)  # valeur moteur gauche
-
 
 def lectureCodeurGauche():
     write_order(serial_file, Order.READENCODERl)
@@ -369,5 +385,8 @@ def avancer(camera,rawcapture):
             break
 
 
+if __name__ == "__main__":
 
-    
+    camera = PiCamera()
+    rawcapture = PiRGBArray(camera, size=(80, 60))
+    time.sleep(0.1)
