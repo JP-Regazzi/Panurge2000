@@ -1,6 +1,5 @@
 import numpy as np
-from dijkstra import dijkstra
-from set_graph import set_graph
+from graph import set_graph, dijkstra
 from raspi_serial import *
 
 class robot:
