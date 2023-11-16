@@ -285,7 +285,7 @@ def tourner_sur_place(angle):
         if abs(lectureCodeurGauche()) >= abs(angle) and abs(lectureCodeurDroit()) >= abs(angle):
             print('lecture gauche: ', lectureCodeurGauche())
             print('lecture droit: ', lectureCodeurDroit())
-            print('angle: ' {angle})
+            print('angle: ', angle)
             Flag = True
             
     write_order(serial_file, Order.STOP)
