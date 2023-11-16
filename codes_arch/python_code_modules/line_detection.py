@@ -146,36 +146,34 @@ def heading_image(frame, steering_angle,
     return heading_im
 
 def return_angle(frame):
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    blur_frame = cv2.medianBlur(gray, 5)
     frame = cv2.resize(frame, (80, 60))
-    
 
-    edges = cv2.Canny(frame, 100, 200)
-    #hsv = convert_to_HSV(frame)
-    #edges = detect_edges(hsv)
+    hsv = convert_to_HSV(frame)
+    #cv2.imshow('hsv', hsv)
+    mask = detect_edges(hsv)
+    #cv2.imshow('mask', mask)
+    cropped_mask = region_of_interest(mask)
+    #cropped_mask = mask
+    #cv2.imshow('cropped_mask', mask)
+    #cropped_mask = mask
 
-    #cropped_edges = region_of_interest(edges)
-    #cropped_edges = edges
-
-    # Remove noise
+    # Noise reduction
     kernel_erode = np.ones((4,4), np.uint8)
-
-
+    eroded_mask = cv2.erode(cropped_mask, kernel_erode, iterations=1)
     kernel_dilate = np.ones((4,4), np.uint8)
-    eroded_mask = cv2.erode(blur_frame, kernel_erode, iterations=1)
     dilated_mask = cv2.dilate(eroded_mask, kernel_dilate, iterations=1)
-    
+    #cv2.imshow('after_noise_reduction', dilated_mask)
+
+    # Steering wheel angle calculation
     line_segments = detect_line_segments(dilated_mask)
-    angle,is_intersec = get_angle(frame,line_segments)
+    angle, is_intersec = get_angle(frame,line_segments)
     heading_im = heading_image(frame,angle)
-    #Display the resulting frame, the cropped edges and the lines on the same image
-    #plt.imshow(cropped_edges)
-    plt.imshow(heading_im)
+    cv2.imshow('heading_image', heading_im)
     
+    #plt.imshow(heading_im)
     """
     bool_inter,line1,line2 = is_intersection(cropped_edges)
-    print(bool_inter)
+
     if bool_inter:
         #display intersection on heading image
         for x1, y1, x2, y2 in line1:
@@ -183,12 +181,13 @@ def return_angle(frame):
         for x1, y1, x2, y2 in line2:
             cv2.line(heading_im, (x1, y1), (x2, y2), (0, 255, 0), 2)
         #show on cropped edges
-        plt.imshow('heading_image',heading_image)
+        #cv2.imshow('heading_image',heading_image)
         print("Intersection at time: ", time.time()-timer)
         #cv2.putText(heading_image, 'Intersection', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
     """
-    
+
     return angle, is_intersec
+
 
 if __name__ == "__main__":
     
